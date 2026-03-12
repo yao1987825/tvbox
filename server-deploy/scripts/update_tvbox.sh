@@ -1,10 +1,20 @@
 #!/bin/bash
 # TVBox 配置自动更新脚本
 # 从 GitHub 获取最新配置
+# 
+# 使用方法:
+#   ./update_tvbox.sh                          # 使用默认路径
+#   ./update_tvbox.sh /自定义/数据目录          # 指定数据目录
+#   DATA_DIR=/自定义/目录 ./update_tvbox.sh    # 使用环境变量
 
 set -e
 
-DATA_DIR="/mnt/mmcblk2p4/docker/iptv-speedtest/data"
+# 支持三种方式指定数据目录:
+# 1. 命令行参数: ./update_tvbox.sh /data
+# 2. 环境变量: DATA_DIR=/data ./update_tvbox.sh
+# 3. 默认路径: /mnt/mmcblk2p4/docker/iptv-speedtest/data
+DATA_DIR="${1:-${DATA_DIR:-/mnt/mmcblk2p4/docker/iptv-speedtest/data}}"
+
 GITHUB_RAW="https://raw.githubusercontent.com/qist/tvbox/master"
 
 LOG_FILE="${DATA_DIR}/update.log"

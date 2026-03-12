@@ -40,7 +40,11 @@ scp scripts/update_tvbox.sh root@你的服务器IP:/mnt/mmcblk2p4/docker/iptv-sp
 ### 3. 设置执行权限
 
 ```bash
+# 默认路径
 ssh root@你的服务器IP "chmod +x /mnt/mmcblk2p4/docker/iptv-speedtest/data/update_tvbox.sh"
+
+# 或自定义路径
+ssh root@你的服务器IP "chmod +x /你的自定义目录/update_tvbox.sh"
 ```
 
 ### 4. 配置定时任务
@@ -48,13 +52,21 @@ ssh root@你的服务器IP "chmod +x /mnt/mmcblk2p4/docker/iptv-speedtest/data/u
 添加定时任务，每天早上 6 点自动更新：
 
 ```bash
+# 默认路径
 ssh root@你的服务器IP "crontab -l | grep update_tvbox; echo '0 6 * * * /mnt/mmcblk2p4/docker/iptv-speedtest/data/update_tvbox.sh >> /mnt/mmcblk2p4/docker/iptv-speedtest/data/update.log 2>&1' | crontab -"
+
+# 自定义路径示例
+ssh root@你的服务器IP "crontab -l | grep update_tvbox; echo '0 6 * * * /你的自定义目录/update_tvbox.sh /你的自定义目录 >> /你的自定义目录/update.log 2>&1' | crontab -"
 ```
 
 ### 5. 手动执行一次测试
 
 ```bash
+# 默认路径
 ssh root@你的服务器IP "/mnt/mmcblk2p4/docker/iptv-speedtest/data/update_tvbox.sh"
+
+# 自定义路径
+ssh root@你的服务器IP "/你的自定义目录/update_tvbox.sh /你的自定义目录"
 ```
 
 ### 6. 验证
@@ -90,6 +102,21 @@ ssh root@你的服务器IP "tail -f /mnt/mmcblk2p4/docker/iptv-speedtest/data/up
 ```
 
 ## 常见问题
+
+### Q: 如何使用自定义数据目录？
+
+脚本支持三种方式指定数据目录：
+
+```bash
+# 方式1: 命令行参数
+./update_tvbox.sh /你的自定义目录
+
+# 方式2: 环境变量
+DATA_DIR=/你的自定义目录 ./update_tvbox.sh
+
+# 方式3: 默认（适合原项目结构）
+./update_tvbox.sh
+```
 
 ### Q: 如何手动更新？
 
