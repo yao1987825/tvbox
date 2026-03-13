@@ -51,7 +51,7 @@ get_local_ip() {
         ip=$(hostname -I 2>/dev/null | awk '{print $1}' || true)
     fi
     if [ -z "$ip" ]; then
-        ip=$(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K[^ ]+' || true)
+        ip=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $NF}' | head -1 || true)
     fi
     if [ -z "$ip" ]; then
         ip="localhost"
@@ -94,16 +94,16 @@ check_environment() {
     fi
     
     local docker_version
-    docker_version=$(docker --version 2>/dev/null | grep -oP '\d+\.\d+' | head -1)
+    docker_version=$(docker --version 2>/dev/null | sed -n 's/.*Docker version \([0-9.]*\).*/\1/p' | head -1)
     log_success "Docker: $(docker --version 2>/dev/null | cut -d' ' -f3-)"
     
     # 检查 Docker Compose
     local compose_version=""
     if command_exists docker-compose; then
-        compose_version=$(docker-compose --version 2>/dev/null | grep -oP '\d+\.\d+' | head -1)
+        compose_version=$(docker-compose --version 2>/dev/null | sed -n 's/.*Docker Compose version \([0-9.]*\).*/\1/p' | head -1)
         log_success "Docker Compose: v$compose_version"
     elif docker compose version &>/dev/null; then
-        compose_version=$(docker compose version --short 2>/dev/null | grep -oP '\d+\.\d+' | head -1)
+        compose_version=$(docker compose version --short 2>/dev/null | sed 's/v//' | sed 's/\..*//' || true)
         log_success "Docker Compose: v$compose_version"
     else
         log_error "Docker Compose 未安装!"
@@ -156,7 +156,7 @@ detect_existing_config() {
             
             # 提取端口
             local port
-            port=$(grep -oP 'ports:' -A 5 "$path" | grep -oP '"\K[0-9]+(?=:80)' | head -1 || echo "")
+            port=$(grep -A 5 'ports:' "$path" | grep ':80' | head -1 | sed 's/.*"\([0-9]*\):80.*/\1/' || echo "")
             if [ -n "$port" ]; then
                 DEFAULT_HTTP_PORT="$port"
                 log_info "检测到现有端口: $port"
