@@ -5,7 +5,7 @@ echo "Starting services..."
 
 # 启动 Nginx（后台运行）
 nginx -g 'daemon off;' &
-NGINX_PID=$!
+echo "Nginx started"
 
 # 启动直播源获取（后台运行）
 (
@@ -16,7 +16,11 @@ NGINX_PID=$!
         sleep ${FETCH_INTERVAL:-3600}
     done
 ) &
-FETCH_PID=$!
+echo "Fetcher started"
 
-# 启动测速脚本
-exec python3 /app/scripts/speedtest_v2.py
+# 启动测速脚本（后台运行）
+python3 /app/scripts/speedtest_v2.py &
+echo "Speedtest started"
+
+# 等待任意进程退出
+wait
