@@ -57,3 +57,54 @@ RUN apt-get update && apt-get install -y \
 ### 状态
 - [x] 已修复 Dockerfile
 - [ ] 等待重新构建镜像
+
+## 问题 3: 端口 80 被占用
+
+### 错误信息
+```
+[emerg] bind() to 0.0.0.0:80 failed (98: Address in use)
+```
+
+### 原因
+- 服务器上已有其他 nginx 容器占用端口 80
+
+### 解决方案
+使用端口映射或修改为使用其他端口：
+
+```bash
+# 使用 5353 端口映射
+docker run -d -p 5353:80 ...
+```
+
+### 状态
+- [x] 已解决（使用端口 5353）
+
+## 问题 4: 测速脚本找不到
+
+### 错误信息
+```
+python3: can't open file '/app/scripts/speedtest_v2.py': [Errno 2] No such file or directory
+```
+
+### 原因
+- iptv-speedtest 镜像里没有包含测速脚本
+- 需要从 GitHub 克隆脚本到本地
+
+### 解决方案
+在部署时克隆脚本：
+
+```bash
+cd /var/lib/docker/iptv-speedtest
+git clone https://github.com/yao1987825/iptv-speedtest.git temp
+cp temp/scripts/*.py scripts/
+rm -rf temp
+```
+
+然后挂载脚本目录：
+
+```bash
+docker run -v /var/lib/docker/iptv-speedtest/scripts:/app/scripts:ro ...
+```
+
+### 状态
+- [x] 已解决
