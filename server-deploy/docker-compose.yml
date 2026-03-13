@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  tvbox_server:
+    image: ghcr.io/yao1987825/tvbox-server:latest
+    container_name: tvbox_server
+    network_mode: host
+    volumes:
+      - ${DATA_DIR:-./data}:/data
+      - ${SCRIPTS_DIR:-./server-deploy/scripts}:/app/scripts:ro
+    environment:
+      - TZ=Asia/Shanghai
+      - TEST_INTERVAL=${TEST_INTERVAL:-180}
+      - TEST_TIMEOUT=${TEST_TIMEOUT:-5}
+      - SOURCE_URL=${SOURCE_URL:-https://gh-proxy.com/https://raw.githubusercontent.com/yaojiwei520/IPTV/refs/heads/main/iptv.m3u}
+      - FETCH_INTERVAL=${FETCH_INTERVAL:-3600}
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
