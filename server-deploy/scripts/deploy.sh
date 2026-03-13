@@ -46,11 +46,11 @@ command_exists() {
 
 # 获取本机 IP
 get_local_ip() {
-    local ip
+    local ip=""
     if command_exists hostname; then
         ip=$(hostname -I 2>/dev/null | awk '{print $1}' || true)
     fi
-    if [ -z "$ip" ]; then
+    if [ -z "$ip" ] && command_exists ip; then
         ip=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $NF}' | head -1 || true)
     fi
     if [ -z "$ip" ]; then
